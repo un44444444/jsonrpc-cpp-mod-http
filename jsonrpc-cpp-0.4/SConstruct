@@ -23,12 +23,12 @@ if ARGUMENTS.get('prefix', 0) != 0:
   install_dir =  ARGUMENTS.get('prefix', ''); 
 else:
   if sys.platform == 'win32':
-      install_dir = 'C:\\MinGW\\';
+      install_dir = 'D:\\MSYS\\local\\jsoncpp\\';
   else:
     install_dir = '/usr/local';
 
 cpppath = [];
-libpath = [];
+libpath = ['-LD:\\MSYS\\local\\libcurl\\lib\\', '-LD:\\MSYS\\local\\jsoncpp\\lib'];
 linkflags = [];
 
 platform = "default";
@@ -38,7 +38,8 @@ if sys.platform == 'win32':
   # Remove flags that cause compilation errors
   cflags.remove('-std=c++98'); #::swprintf and ::vswprintf has not been declared
   linkflags.append('-enable-auto-import');
-  cpppath.append('-Ic:\\MinGW\\include');
+  cpppath.append('-ID:\\MSYS\\local\\jsoncpp\\include');
+  cpppath.append('-ID:\\MSYS\\local\\libcurl\\include');
 
 # Create an environment
 env = Environment(ENV= os.environ.copy(), tools = [platform, "doxygen"], toolpath = ['.', './doc'], CXXFLAGS = cflags, CPPPATH = cpppath, LIBPATH = libpath, LINKFLAGS = linkflags);
@@ -77,6 +78,8 @@ if env.WhereIs('curl') is not None:
   libs.append('curl');
   lib_includes.append('src/jsonrpc_httpclient.h');
   lib_sources.append('src/jsonrpc_httpclient.cpp');
+  lib_includes.append('src/jsonrpc_httpserver.h');
+  lib_sources.append('src/jsonrpc_httpserver.cpp');
 
 # Add winsock library for MS Windows
 if sys.platform == 'win32':
@@ -88,6 +91,7 @@ libjsonrpc = env.SharedLibrary(target = lib_target, source = lib_sources, LIBS =
 
 # Build examples
 examples_sources = ['examples/test-rpc.cpp', lib_sources];
+httpserver_sources = ['examples/http-server.cpp'];
 udpserver_sources = ['examples/udp-server.cpp'];
 tcpserver_sources = ['examples/tcp-server.cpp'];
 udpclient_sources = ['examples/udp-client.cpp'];
@@ -95,6 +99,7 @@ tcpclient_sources = ['examples/tcp-client.cpp'];
 system_sources = ['examples/system.cpp'];
 
 examples_common = env.Object(examples_sources);
+httpserver = env.Program(target = 'examples/http-server', source = [httpserver_sources, examples_common], LIBS = libs);
 tcpserver = env.Program(target = 'examples/tcp-server', source = [tcpserver_sources, examples_common], LIBS = libs);
 udpserver = env.Program(target = 'examples/udp-server', source = [udpserver_sources, examples_common], LIBS = libs);
 tcpclient = env.Program(target = 'examples/tcp-client', source = [tcpclient_sources, examples_common], LIBS = libs);
@@ -125,7 +130,7 @@ env.Alias('doxygen', doxygen);
 
 # Alias for targets
 env.Alias('build', [libjsonrpc]);
-env.Alias('examples', ['build', tcpserver, udpserver, tcpclient, udpclient, system_bin]);
+env.Alias('examples', ['build', httpserver, tcpserver, udpserver, tcpclient, udpclient, system_bin]);
 env.Alias('install', [install_dir]);
 env.Alias('build-test', ['build', unittest]);
 env.Alias('test', ['build-test', runtest]);

@@ -22,6 +22,7 @@
  * \author Sebastien Vincent
  */
 
+#include <iostream>
 #include "test-rpc.h"
 
 bool TestRpc::Print(const Json::Value& root, Json::Value& response)

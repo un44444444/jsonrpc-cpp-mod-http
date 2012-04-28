@@ -44,24 +44,22 @@ namespace Json
   {
     /**
      * \enum EncapsulatedFormat
-     * \brief JSON-RPC message encoding format (nothing to do with UTF-8 or 
-     * languages).
+     * \brief JSON-RPC message encoding format (nothing to do with UTF-8 or languages).
      */
     enum EncapsulatedFormat
     {
       RAW, /**< Raw format. */
-      NETSTRING /**< Encapsulate the message with NetString (see http://cr.yp.to/proto/netstrings.txt). */
+      NETSTRING, /**< Encapsulate the message with NetString (see http://cr.yp.to/proto/netstrings.txt). */
+      HTTP_POST /**< Encapsulate the message in HTTP POST. Only for TcpServer*/
 #if 0
-      HTTP_POST, /**< Encapsulate the message in HTTP POST. */
-      HTTP_GET, /**< Encapsulate the message in HTTP POST. */
+      HTTP_GET, /**< Encapsulate the message in HTTP GET. */
 #endif
     };
 
     /**
      * \enum ErrorCode
      * \brief JSON-RPC error codes.
-     * \note Value from -32099 to -32000 are reserved for implementation-defined
-     * server-errors.
+     * \note Value from -32099 to -32000 are reserved for implementation-defined server-errors.
      */
     enum ErrorCode
     {
